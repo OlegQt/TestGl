@@ -14,7 +14,7 @@ import kotlin.coroutines.CoroutineContext
 class RootActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRootBinding
-    private var globalCount: Int = 100
+    private var globalCount: Int = 0
     private var countingEnabled = true
     private var countJob: Job? = null
 
@@ -58,11 +58,15 @@ class RootActivity : AppCompatActivity() {
         countJob = MainScope().launch(exceptionHandler) {
             while (true) {
                 if (countingEnabled) {
-                    delay(10)
+                    delay(COUNTING_DELAY_MILLS)
                     globalCount++
                     supportActionBar?.subtitle = globalCount.toString()
                 }
             }
         }
+    }
+
+    companion object{
+        const val COUNTING_DELAY_MILLS = 10L
     }
 }
