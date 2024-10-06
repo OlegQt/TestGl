@@ -2,7 +2,10 @@ package com.testgl
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
 import com.testgl.databinding.ActivityRootBinding
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Job
@@ -14,6 +17,8 @@ import kotlin.coroutines.CoroutineContext
 class RootActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRootBinding
+    private val viewModel:RootVm by viewModels()
+
     private var globalCount: Int = 0
     private var countingEnabled = true
     private var countJob: Job? = null
@@ -26,7 +31,9 @@ class RootActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setUpUi()
+        setUpBehaviour()
 
+        setUpObservation()
     }
 
     override fun onPause() {
@@ -50,6 +57,20 @@ class RootActivity : AppCompatActivity() {
         startTimer()
     }
 
+    private fun setUpBehaviour(){
+        binding.btnAction.setOnClickListener {
+            countingEnabled=!countingEnabled
+        }
+    }
+
+    private fun setUpObservation(){
+        lifecycleScope.launch {
+            viewModel.date.observe(this@RootActivity){
+                binding.txt.text = it
+            }
+        }
+    }
+
     private fun startTimer() {
         val exceptionHandler =
             CoroutineExceptionHandler { coroutineContext: CoroutineContext, throwable: Throwable ->
@@ -57,8 +78,8 @@ class RootActivity : AppCompatActivity() {
             }
         countJob = MainScope().launch(exceptionHandler) {
             while (true) {
+                delay(COUNTING_DELAY_MILLS)
                 if (countingEnabled) {
-                    delay(COUNTING_DELAY_MILLS)
                     globalCount++
                     supportActionBar?.subtitle = globalCount.toString()
                 }
