@@ -4,24 +4,17 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.testgl.databinding.ActivityRootBinding
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 class RootActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRootBinding
-    private val viewModel:RootVm by viewModels()
+    private val viewModel: RootVm by viewModels()
 
-    private var globalCount: Int = 0
-    private var countingEnabled = true
-    private var countJob: Job? = null
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,12 +31,15 @@ class RootActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        countJob?.cancel()
+        viewModel.pauseActivity()
     }
 
     override fun onResume() {
         super.onResume()
-        startTimer()
+
+        Snackbar.make(binding.root, "Application was paused ".plus(viewModel.getPauseTime()), Snackbar.LENGTH_INDEFINITE)
+            .setAction("Ok") {}
+            .show()
     }
 
     private fun setUpUi() {
@@ -54,40 +50,25 @@ class RootActivity : AppCompatActivity() {
             show()
         }
 
-        startTimer()
     }
 
-    private fun setUpBehaviour(){
+    private fun setUpBehaviour() {
         binding.btnAction.setOnClickListener {
-            countingEnabled=!countingEnabled
+            MaterialAlertDialogBuilder(this)
+                .setTitle("ApplicationGL")
+                .setMessage("Action completed")
+                .setNeutralButton("OK",null)
+                .show()
         }
     }
 
-    private fun setUpObservation(){
+    private fun setUpObservation() {
         lifecycleScope.launch {
-            viewModel.date.observe(this@RootActivity){
-                binding.txt.text = it
+            viewModel.date.observe(this@RootActivity) { date ->
+                supportActionBar?.subtitle = "Application active $date"
             }
         }
     }
 
-    private fun startTimer() {
-        val exceptionHandler =
-            CoroutineExceptionHandler { coroutineContext: CoroutineContext, throwable: Throwable ->
-                binding.txt.text = throwable.message.toString()
-            }
-        countJob = MainScope().launch(exceptionHandler) {
-            while (true) {
-                delay(COUNTING_DELAY_MILLS)
-                if (countingEnabled) {
-                    globalCount++
-                    supportActionBar?.subtitle = globalCount.toString()
-                }
-            }
-        }
-    }
 
-    companion object{
-        const val COUNTING_DELAY_MILLS = 10L
-    }
 }
