@@ -2,7 +2,6 @@ package com.testgl.presentation
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.testgl.R
 import com.testgl.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
