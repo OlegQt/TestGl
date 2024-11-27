@@ -1,5 +1,13 @@
 <resources>
+
+
     <string name="app_name">TestGl</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <!-- Fragment ROOT -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+    <!-- MENU -->
+    <string name="root_page">Root</string>
+    <string name="info_page">Info</string>
+    <string name="console_page">console</string>
 </resources>
