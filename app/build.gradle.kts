@@ -48,6 +48,8 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.2.0")
     // Kotlin
     implementation("androidx.fragment:fragment-ktx:1.8.5")
+    // LifeCycle
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

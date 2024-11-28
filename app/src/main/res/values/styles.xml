@@ -4,7 +4,5 @@
         <item name="android:background">?attr/colorPrimary</item>
         <item name="itemTextColor">@color/nav_menu_icon_colors</item>
         <item name="itemIconTint">@color/nav_menu_icon_colors</item>
-
-
     </style>
 </resources>
