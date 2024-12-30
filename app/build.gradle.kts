@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId = "com.testgl"
         minSdk = 22
-        targetSdk = 35
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
@@ -33,9 +33,26 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    buildFeatures{
+        compose = true
+    }
+    composeOptions{
+        kotlinCompilerExtensionVersion = "1.5.0"
+    }
 }
 
 dependencies {
+    implementation("androidx.compose.runtime:runtime:1.7.6")
+
+    // Material Design 3
+    //implementation ("androidx.compose.material3:material3")
+    implementation ("androidx.compose.ui:ui:1.7.6")
+    implementation("androidx.activity:activity-compose:1.9.3")
+    implementation("androidx.compose.foundation:foundation")
+    // Material Design 3
+    implementation("androidx.compose.material3:material3:1.3.1")
+
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
