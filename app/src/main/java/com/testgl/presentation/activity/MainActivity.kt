@@ -3,6 +3,7 @@ package com.testgl.presentation.activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,22 +23,25 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
+    private val viewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ShowDesign()
+            ShowDesign(viewModelParam = viewModel)
         }
     }
 }
 
 @Composable
-fun ShowDesign() {
+fun ShowDesign(viewModelParam: MainViewModel) {
+    val textData = viewModelParam.textData.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(all = 16.dp)
     ) {
-        CustomCard(Icons.Default.Face, "txt1", "txt2", "Bottom")
+        CustomCard(Icons.Default.Face, "txt1", "txt2", textData.value)
     }
 }
 
