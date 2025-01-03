@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class MainViewModel:ViewModel() {
-    val textData = MutableStateFlow("Text")
+    private val textData = MutableStateFlow("Text")
     val observable = MutableLiveData<String>()
 
     init {

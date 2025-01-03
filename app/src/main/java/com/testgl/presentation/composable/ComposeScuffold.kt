@@ -1,15 +1,11 @@
 package com.testgl.presentation.composable
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -18,61 +14,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import com.testgl.presentation.viewmodels.MainViewModel
-
-@Composable
-fun ShowDesign(viewModelParam: MainViewModel?, modifier: Modifier) {
-    Column(modifier.padding(horizontal = 12.dp)) {
-        CustomCard(viewModelParam, modifier)
-    }
-}
-
-@Composable
-fun CustomCard(viewModelParam: MainViewModel? = null, modifier: Modifier) {
-    val txt = viewModelParam?.textData?.collectAsState()
-
-    Card(
-        onClick = { },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Face,
-                contentDescription = "Icon",
-                tint = Color.Black,
-                modifier = Modifier.size(48.dp)
-            )
-            Column(
-                modifier = Modifier.padding(start = 16.dp)
-            ) {
-                Text("text1")
-                Text("text2")
-            }
-        }
-        Text(
-            text = txt?.value.toString(),
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-        )
-    }
-}
 
 @Composable
 fun RootView(viewModelParam: MainViewModel? = null) {
     val top: @Composable () -> Unit = { ShowTopAppBar(viewModelParam) }
     val bottom: @Composable () -> Unit = { ShowNavBar(viewModelParam) }
-    val center: @Composable () -> Unit = {}
     val floatBtn: @Composable () -> Unit = { ShowFloatBtn(viewModelParam) }
 
     Scaffold(
@@ -80,12 +29,7 @@ fun RootView(viewModelParam: MainViewModel? = null) {
         bottomBar = bottom,
         floatingActionButton = floatBtn
     ) { innerPadding ->
-        ShowDesign(
-            viewModelParam,
-            Modifier
-                .fillMaxWidth()
-                .padding(innerPadding)
-        )
+        ShowList(viewModelParam,Modifier.fillMaxWidth().padding(innerPadding))
     }
 }
 
