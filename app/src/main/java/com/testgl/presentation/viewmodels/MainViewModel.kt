@@ -18,7 +18,9 @@ class MainViewModel:ViewModel() {
                 textData.emit(System.currentTimeMillis().toString())
             }
         }
+    }
 
-        observable.postValue("Hello")
+    fun showMessageDlg(newMessage:String){
+        observable.value = newMessage
     }
 }

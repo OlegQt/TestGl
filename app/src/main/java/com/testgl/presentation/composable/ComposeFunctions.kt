@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -26,8 +28,6 @@ import com.testgl.presentation.viewmodels.MainViewModel
 @Composable
 fun ShowDesign(viewModelParam: MainViewModel?, modifier: Modifier) {
     Column(modifier.padding(horizontal = 12.dp)) {
-        CustomCard(viewModelParam, modifier)
-        CustomCard(viewModelParam, modifier)
         CustomCard(viewModelParam, modifier)
     }
 }
@@ -68,16 +68,17 @@ fun CustomCard(viewModelParam: MainViewModel? = null, modifier: Modifier) {
     }
 }
 
-
 @Composable
 fun RootView(viewModelParam: MainViewModel? = null) {
-    val top: @Composable () -> Unit = { ShowTopAppBar() }
-    val bottom: @Composable () -> Unit = { ShowNavBar() }
+    val top: @Composable () -> Unit = { ShowTopAppBar(viewModelParam) }
+    val bottom: @Composable () -> Unit = { ShowNavBar(viewModelParam) }
     val center: @Composable () -> Unit = {}
+    val floatBtn: @Composable () -> Unit = { ShowFloatBtn(viewModelParam) }
 
     Scaffold(
         topBar = top,
         bottomBar = bottom,
+        floatingActionButton = floatBtn
     ) { innerPadding ->
         ShowDesign(
             viewModelParam,
@@ -92,7 +93,10 @@ fun RootView(viewModelParam: MainViewModel? = null) {
 @Composable
 fun ShowTopAppBar(viewModelParam: MainViewModel? = null) {
     Row(Modifier.fillMaxWidth()) {
-        IconButton({}, Modifier.align(Alignment.CenterVertically)) {
+        IconButton(
+            { viewModelParam?.showMessageDlg("BACK") },
+            Modifier.align(Alignment.CenterVertically)
+        ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Default.ArrowBack,
                 contentDescription = "backToMain"
@@ -103,7 +107,14 @@ fun ShowTopAppBar(viewModelParam: MainViewModel? = null) {
 }
 
 @Composable
-fun ShowNavBar() {
+fun ShowNavBar(viewModelParam: MainViewModel? = null) {
     Text("Navigation")
+}
 
+@Composable
+fun ShowFloatBtn(viewModelParam: MainViewModel? = null) {
+    FloatingActionButton(
+        onClick = { viewModelParam?.showMessageDlg("ADD") }) {
+        Icon(imageVector = Icons.Default.AddCircle, contentDescription = "Add")
+    }
 }
