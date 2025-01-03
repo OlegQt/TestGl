@@ -1,5 +1,6 @@
-package com.testgl.presentation.activity
+package com.testgl.presentation.viewmodels
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
@@ -8,6 +9,7 @@ import kotlinx.coroutines.launch
 
 class MainViewModel:ViewModel() {
     val textData = MutableStateFlow("Text")
+    val observable = MutableLiveData<String>()
 
     init {
         viewModelScope.launch {
@@ -16,5 +18,7 @@ class MainViewModel:ViewModel() {
                 textData.emit(System.currentTimeMillis().toString())
             }
         }
+
+        observable.postValue("Hello")
     }
 }
