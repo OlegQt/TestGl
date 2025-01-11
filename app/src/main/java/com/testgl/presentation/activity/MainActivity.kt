@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.testgl.presentation.composable.RootView
+import com.testgl.presentation.theme.AppTheme
 import com.testgl.presentation.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
 
@@ -19,7 +20,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            RootView()
+            AppTheme(dynamicColor = false) {
+                RootView()
+            }
         }
 
         setUpObservation()

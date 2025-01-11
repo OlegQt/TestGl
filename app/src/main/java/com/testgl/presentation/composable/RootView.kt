@@ -15,6 +15,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.testgl.presentation.theme.AppTheme
 
 @Composable
 fun RootView() {
@@ -33,10 +34,12 @@ fun RootView() {
     }
 }
 
-@Preview(showSystemUi = true)
+@Preview(showSystemUi = true, showBackground = false)
 @Composable
 fun ScreenPreview() {
-    RootView()
+    AppTheme(darkTheme = false, dynamicColor = false) {
+        RootView()
+    }
 }
 
 @Composable
