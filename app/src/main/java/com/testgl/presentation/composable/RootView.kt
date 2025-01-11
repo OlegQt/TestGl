@@ -1,7 +1,6 @@
 package com.testgl.presentation.composable
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,12 +23,13 @@ fun RootView() {
             .fillMaxSize()
             .padding(all = 16.dp)
     ) {
-        ShowList()
-
-        FloatingActionButton({}) { AnimationWaiting() }
-
-        Spacer(Modifier.size(20.dp))
-
+        SelectOptionScreen(
+            task = "Task",
+            onSelectionChanged = {},
+            onCancelButtonClicked = {},
+            onNextButtonClicked = {},
+            answerList = listOf("A option", "B option", "C option")
+        )
         FloatingActionButton({}) { AnimationGear() }
     }
 }
