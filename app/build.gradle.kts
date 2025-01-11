@@ -53,6 +53,10 @@ dependencies {
     // Material Design 3
     implementation("androidx.compose.material3:material3:1.3.1")
 
+    // Preview tooling
+    debugImplementation("androidx.compose.ui:ui-tooling:1.7.6")
+    implementation("androidx.compose.ui:ui-tooling:1.7.6")
+
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
@@ -62,6 +66,9 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.8.5")
     // LifeCycle
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
+
+    // Lottie animation
+    implementation("com.airbnb.android:lottie-compose:6.6.2")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
