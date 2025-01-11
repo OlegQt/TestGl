@@ -3,7 +3,6 @@ package com.testgl.presentation.composable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,26 +42,26 @@ fun ScreenPreview() {
 }
 
 @Composable
-fun AnimationWaiting() {
+fun AnimationWaiting(modifier: Modifier = Modifier) {
     val composition by rememberLottieComposition(
         spec = LottieCompositionSpec.Asset("dearSearchAnimation.json")
     )
 
     LottieAnimation(
-        modifier = Modifier.size(48.dp, 48.dp),
+        modifier = modifier,
         composition = composition,
         iterations = LottieConstants.IterateForever
     )
 }
 
 @Composable
-fun AnimationGear() {
+fun AnimationGear(modifier: Modifier = Modifier) {
     val composition by rememberLottieComposition(
         spec = LottieCompositionSpec.Asset("gear_animation.json")
     )
 
     LottieAnimation(
-        modifier = Modifier.size(48.dp, 48.dp),
+        modifier = modifier,
         composition = composition,
         iterations = LottieConstants.IterateForever
     )
