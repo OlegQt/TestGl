@@ -3,7 +3,6 @@ package com.testgl.presentation.composable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -29,7 +28,7 @@ fun RootView() {
             onNextButtonClicked = {},
             answerList = listOf("A option", "B option", "C option")
         )
-        FloatingActionButton({}) { AnimationGear() }
+        //FloatingActionButton({}) { AnimationGear() }
     }
 }
 

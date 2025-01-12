@@ -2,13 +2,13 @@ package com.testgl.presentation.composable
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
@@ -59,15 +59,17 @@ fun SelectOptionScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 4.dp, vertical = 8.dp)
             )
-            Row(horizontalArrangement = Arrangement.SpaceBetween) {
-                ListOfOptions(
-                    optionList = answerList,
-                    onNewSelection = { selectedValue = it }
-                )
-                AnimationWaiting(
-                    Modifier
-                        .fillMaxWidth()
-                        .size(168.dp))
+
+            LazyVerticalStaggeredGrid(columns = StaggeredGridCells.Fixed(2)) {
+                item {
+                    ListOfOptions(
+                        optionList = answerList,
+                        onNewSelection = { selectedValue = it }
+                    )
+                }
+                item {
+                    AnimationWaiting(modifier = Modifier)
+                }
             }
 
 
@@ -76,7 +78,10 @@ fun SelectOptionScreen(
                 value = selectedValue,
                 onValueChange = { textState = it },
                 enabled = true,
-                modifier = Modifier.background(Color.Transparent),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Transparent)
+                    .padding(all = 8.dp),
                 shape = RoundedCornerShape(20),
                 label = { Text("Answer") },
                 trailingIcon = { Icon(Icons.Default.Call, null) }
