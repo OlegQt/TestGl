@@ -43,10 +43,8 @@ android {
 }
 
 dependencies {
+    // Compose base
     implementation("androidx.compose.runtime:runtime:1.7.6")
-
-    // Material Design 3
-    //implementation ("androidx.compose.material3:material3")
     implementation ("androidx.compose.ui:ui:1.7.6")
     implementation("androidx.activity:activity-compose:1.9.3")
     implementation("androidx.compose.foundation:foundation")
@@ -72,6 +70,9 @@ dependencies {
 
     // ConstraintLayout
     implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0")
+
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:2.8.5")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
