@@ -1,5 +1,7 @@
 package com.testgl.presentation.composable
 
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -33,14 +35,22 @@ fun RootView(
     Scaffold(topBar = {}, floatingActionButton = {}, bottomBar = {}) { innerPadding ->
         NavHost(
             navController = navController, // Instance of object to navigate between screens
-            startDestination = Screens.Options.title, // A string route defining the destination shown by default
-            modifier = Modifier.padding(innerPadding)
+            startDestination = Screens.Collection.title, // A string route defining the destination shown by default
+            modifier = Modifier.padding(innerPadding),
+            enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+            exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }
         ) {
             composable(route = Screens.Options.title) {
-                ScreenOptions(Modifier.fillMaxSize())
+                ScreenOptions(Modifier.fillMaxSize(), navigateNext = {
+                    navController.navigate(
+                        route = Screens.Collection.title
+                    )
+                })
             }
             composable(route = Screens.Collection.title) {
-                ScreenCollection(Modifier.fillMaxSize())
+                ScreenCollection(Modifier.fillMaxSize(), navigateNext = {
+                    navController.navigate(route = Screens.Options.title)
+                })
             }
         }
     }
