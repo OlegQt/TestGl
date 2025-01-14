@@ -38,7 +38,9 @@ fun RootView(
             startDestination = Screens.Collection.title, // A string route defining the destination shown by default
             modifier = Modifier.padding(innerPadding),
             enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
-            exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }
+            exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
+            popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
+            popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
         ) {
             composable(route = Screens.Options.title) {
                 ScreenOptions(Modifier.fillMaxSize(), navigateNext = {
