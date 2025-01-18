@@ -1,9 +1,6 @@
-package com.testgl.presentation.composable
+package com.testgl.presentation.Screens
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -19,13 +16,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -33,17 +28,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.testgl.presentation.navigation.Navigation
 import com.testgl.presentation.theme.AppTheme
-import com.testgl.presentation.viewmodels.MainViewModel
 
 // enum values that represent the screens in the app
 enum class Screens(val title: String) {
@@ -52,70 +44,8 @@ enum class Screens(val title: String) {
 }
 
 @Composable
-fun RootView(
-    viewModel: MainViewModel = viewModel(),
-    navController: NavHostController = rememberNavController()
-) {
-    var screenTitle by remember { mutableStateOf("") }
-
-    val navigateBack: () -> Unit = { navController.popBackStack() }
-
-    val navigateHome: () -> Unit = {
-        navController.popBackStack()
-        navController.navigate(route = "task")
-    }
-
-    Scaffold(
-        topBar = {
-            AppBar(
-                titleStr = screenTitle,
-                onNavIconClick = navigateBack,
-                onNavHomeClick = navigateHome
-            )
-        },
-        floatingActionButton = {},
-        bottomBar = {
-            BottomBar(
-                onClick = {
-                    viewModel.showMessageDlg(it.toString())
-                })
-        }
-    ) { innerPadding ->
-        NavHost(
-            navController = navController, // Instance of object to navigate between screens
-            startDestination = Screens.Collection.title, // A string route defining the destination shown by default
-            modifier = Modifier.padding(innerPadding),
-            enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
-            exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
-            popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
-            popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
-        ) {
-            composable(route = Screens.Options.title) {
-                screenTitle = Screens.Options.title  // Change App Bar Title
-
-                ScreenOptions(Modifier.fillMaxSize(), navigateNext = {
-                    navController.navigate(
-                        route = Screens.Collection.title
-                    )
-                })
-            }
-
-            composable(route = Screens.Collection.title) {
-                screenTitle = Screens.Collection.title // Change App Bar Title
-
-                ScreenCollection(Modifier.fillMaxSize(), navigateNext = {
-                    navController.navigate(route = Screens.Options.title)
-                })
-            }
-
-            composable(route = "task") {
-                SelectOptionScreen(
-                    task = "New task",
-                    answerList = listOf("New Option", "Choose", "Variant", "None of this right")
-                )
-            }
-        }
-    }
+fun RootView(navHostController: NavHostController = rememberNavController()) {
+    Navigation(navController = navHostController)
 }
 
 @Preview(showSystemUi = true, showBackground = false)

@@ -1,4 +1,4 @@
-package com.testgl.presentation.composable
+package com.testgl.presentation.Screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
