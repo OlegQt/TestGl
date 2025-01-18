@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.twotone.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.twotone.ArrowBack
 import androidx.compose.material.icons.twotone.Build
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -143,7 +143,7 @@ fun AppBar(
         },
         navigationIcon = {
             IconButton(onClick = onNavIconClick) {
-                Icon(imageVector = Icons.TwoTone.ArrowBack, contentDescription = null)
+                Icon(imageVector = Icons.AutoMirrored.TwoTone.ArrowBack, contentDescription = null)
             }
         })
 }
