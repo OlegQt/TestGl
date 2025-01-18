@@ -4,7 +4,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.OutlinedButton
@@ -28,18 +30,23 @@ fun ScreenCollection(modifier: Modifier = Modifier, navigateNext: () -> Unit = {
                 .fillMaxSize()
                 .background(Color.LightGray)
         ) {
-            OutlinedButton(
+            Column(
                 modifier = Modifier.align(alignment = Alignment.Center),
-                onClick = navigateNext,
-                shape = RoundedCornerShape(20),
-                //border = BorderStroke(2.dp, color = Color.Yellow)
+                verticalArrangement = Arrangement.Center
             ) {
-                Text("Navigate to options")
+                OutlinedButton(
+                    modifier = Modifier,
+                    onClick = navigateNext,
+                    shape = RoundedCornerShape(20),
+                    //border = BorderStroke(2.dp, color = Color.Yellow)
+                ) {
+                    Text("Navigate to options")
+                }
             }
         }
     }
-
 }
+
 
 @Preview
 @Composable
