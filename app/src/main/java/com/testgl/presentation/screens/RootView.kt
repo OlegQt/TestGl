@@ -1,14 +1,14 @@
-package com.testgl.presentation.Screens
+package com.testgl.presentation.screens
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.twotone.Build
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.twotone.CheckCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -16,37 +16,28 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.testgl.presentation.navigation.Graph
 import com.testgl.presentation.navigation.Navigation
 import com.testgl.presentation.theme.AppTheme
-
-// enum values that represent the screens in the app
-enum class Screens(val title: String) {
-    Options("Options_Screen"),
-    Collection("Collection_Screen")
-}
-
-@Composable
-fun RootView(navHostController: NavHostController = rememberNavController()) {
-    Navigation(navController = navHostController)
-}
 
 @Preview(showSystemUi = true, showBackground = false)
 @Composable
@@ -56,20 +47,69 @@ fun ScreenPreview() {
     }
 }
 
+@Composable
+fun RootView() {
+    val navigation = rememberNavController()
+
+    var selectedScreen by rememberSaveable { mutableIntStateOf(0) }
+
+    val navigateToScreen: () -> Unit = {
+        when (selectedScreen) {
+            0 -> {
+                navigation.navigate(route = Graph.GreetingScreen)
+            }
+
+            1 -> {
+                navigation.navigate(route = Graph.ScrambleGameScreen)
+            }
+
+            2 -> {
+                navigation.navigate(
+                    route = Graph.AboutScreen("Some info")
+                )
+            }
+        }
+    }
+
+    val appBar: @Composable () -> Unit = { AppBar(selectedScreen) }
+
+    val bottomBar: @Composable () -> Unit = {
+        BottomBar(onClick = {
+            selectedScreen = it
+            navigateToScreen()
+        })
+    }
+
+    Scaffold(
+        topBar = appBar,
+        bottomBar = bottomBar,
+        content = { inPad ->
+            Navigation(
+                navController = navigation,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(inPad)
+            )
+        })
+
+}
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBar(
-    titleStr: String = "Back",
+    screen: Int,
     onNavIconClick: () -> Unit = {},
-    onNavHomeClick: () -> Unit = {}
 ) {
     TopAppBar(
         actions = {
-            IconButton(onClick = onNavHomeClick)
-            { Icon(imageVector = Icons.TwoTone.Build, null) }
+            //Text("TODO", Modifier.background(MaterialTheme.colorScheme.error))
         },
         title = {
-            Text(text = titleStr, modifier = Modifier.padding(start = 16.dp))
+            Text(
+                text = Graph.ScreenNames.entries[screen].toString(),
+                modifier = Modifier.padding(start = 16.dp)
+            )
         },
         navigationIcon = {
             IconButton(onClick = onNavIconClick) {
@@ -84,39 +124,36 @@ fun BottomBar(
     onClick: (Int) -> Unit = {}
 ) {
     var selectedItem by remember { mutableIntStateOf(0) }
-    val items = listOf(
-        "Songs",
-        "Artists",
-        "Playlists"
-    )
+
     NavigationBar {
-        items.forEachIndexed { index, item ->
+        Graph.ScreenNames.entries.forEachIndexed { index, item ->
+
             val size = animateFloatAsState(
                 if (selectedItem == index) 32.0F
                 else 24.0F,
                 label = "iconSizeAnimation"
             )
 
+            val iconImage = when (index) {
+                0 -> Icons.Filled.Person
+                1 -> Icons.TwoTone.CheckCircle
+                else -> Icons.Filled.Info
+            }
+
             NavigationBarItem(
                 icon = {
-                    BadgedBox(
-                        badge = {
-                            Badge(
-                                content = { Text(index.toString()) },
-                                containerColor = MaterialTheme.colorScheme.onError
-                            )
-                        },
-                        content = {
-                            Icon(
-                                Icons.Filled.Favorite,
-                                contentDescription = item,
-                                modifier = Modifier.size(Dp(size.value)),
-                            )
-                        })
+                    Icon(
+                        imageVector = iconImage,
+                        contentDescription = item.toString(),
+                        modifier = Modifier.size(Dp(size.value)),
+                    )
                 },
-                label = { Text(item.plus(" $index")) },
+                label = { Text(item.toString()) },
                 selected = selectedItem == index,
-                onClick = { selectedItem = index },
+                onClick = {
+                    selectedItem = index
+                    onClick(index)
+                },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.primary,
                     indicatorColor = Color.Transparent

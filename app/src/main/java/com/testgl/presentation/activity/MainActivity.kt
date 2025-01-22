@@ -8,7 +8,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.testgl.presentation.Screens.RootView
+import com.testgl.presentation.screens.RootView
 import com.testgl.presentation.theme.AppTheme
 import com.testgl.presentation.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
