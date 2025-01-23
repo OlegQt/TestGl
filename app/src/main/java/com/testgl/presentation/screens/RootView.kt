@@ -43,12 +43,12 @@ import com.testgl.presentation.theme.AppTheme
 @Composable
 fun ScreenPreview() {
     AppTheme(darkTheme = false, dynamicColor = false) {
-        RootView()
+        ShowScreenContent()
     }
 }
 
 @Composable
-fun RootView() {
+fun ShowScreenContent() {
     val navigation = rememberNavController()
 
     var selectedScreen by rememberSaveable { mutableIntStateOf(0) }
