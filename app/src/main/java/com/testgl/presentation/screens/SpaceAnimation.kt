@@ -47,6 +47,7 @@ fun Space(
 
     val particleList = remember { mutableStateListOf<WhiteParticle>() }
 
+    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -93,7 +94,7 @@ fun Space(
                 .drawBehind {
                     particleList.forEach {
                         drawCircle(
-                            color = Color.White,
+                            color = onSurfaceColor,
                             radius = (Offset(0.5f, 0.5f).minus(it.position)).getDistance() * 100,
                             center = it.position.toActualSize(size.width, size.height)
                         )
