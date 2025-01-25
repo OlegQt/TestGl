@@ -123,7 +123,7 @@ fun BottomBar(
     modifier: Modifier = Modifier,
     onClick: (Int) -> Unit = {}
 ) {
-    var selectedItem by remember { mutableIntStateOf(0) }
+    var selectedItem by remember { mutableIntStateOf(1) }
 
     NavigationBar {
         Graph.ScreenNames.entries.forEachIndexed { index, item ->

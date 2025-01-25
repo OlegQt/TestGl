@@ -18,7 +18,7 @@ fun Navigation(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Graph.GreetingScreen,
+        startDestination = Graph.ScrambleGameScreen,
         enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
         exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
         popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },

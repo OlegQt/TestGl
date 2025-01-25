@@ -14,32 +14,25 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.testgl.presentation.theme.AppTheme
 import com.testgl.presentation.viewmodels.ScrambleGameViewModel
-import kotlinx.coroutines.delay
-import kotlin.random.Random
 
 data class Ball(
     var pos: Offset = Offset(0f, 0f),
@@ -53,60 +46,10 @@ fun ScrambleGameScreen(
 ) {
     val uiState = viewModel.uiState.collectAsState()
 
-    val balls = remember { mutableStateListOf<Ball>() }
-
-    repeat(10) {
-        balls.add(
-            Ball(
-                pos = Offset(Random.nextFloat(), 0f),
-                directionVector = Offset(Random.nextFloat() / 100, Random.nextFloat() / 100)
-            )
-        )
-    }
-
-    // Запускаем coroutine для обновления позиции шариков
-    LaunchedEffect(Unit) {
-        while (true) {
-            balls.forEachIndexed { index, ball ->
-                // Обновляем позицию каждого шарика, добавляя его вектор направления
-                balls[index] = ball.copy(
-                    pos = Offset(
-                        x = ball.pos.x + ball.directionVector.x,
-                        y = ball.pos.y + ball.directionVector.y
-                    )
-                )
-            }
-            delay(16) // задержка для плавности (60 FPS)
-        }
-    }
 
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Color.Gray)
-            .blur(radius = 10.dp)
-            .drawBehind {
-                val gradient = Brush.linearGradient(
-                    colors = listOf(Color.Red, Color.Blue),
-                    start = Offset.Zero,
-                    end = Offset(size.width, size.height)
-                )
-                drawRect(gradient)
 
-                balls.forEach {
-                    val screenPos = Offset(
-                        x = it.pos.x * size.width,
-                        y = it.pos.y * size.height
-                    )
-                    drawCircle(
-                        color = Color.White,
-                        radius = 50f,
-                        center = screenPos
-                    )
-                }
-            },
-    )
+    Space(modifier = Modifier.fillMaxSize())
 
     Box(
         modifier = modifier
@@ -166,9 +109,9 @@ fun ScrambleGameScreen(
                         processedWord = filterResult.second
                     },
                     shape = RoundedCornerShape(percent = 50),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary
-                    ),
+                    textStyle = TextStyle.Default.copy(fontSize = 28.sp)
+                    //colors = OutlinedTextFieldDefaults.colors(                        unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary
+
                 )
             }
         }
