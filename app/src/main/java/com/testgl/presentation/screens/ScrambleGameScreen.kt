@@ -11,19 +11,26 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,6 +38,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.testgl.presentation.theme.AppTheme
 import com.testgl.presentation.viewmodels.ScrambleGameViewModel
+import kotlinx.coroutines.delay
+import kotlin.random.Random
+
+data class Ball(
+    var pos: Offset = Offset(0f, 0f),
+    val directionVector: Offset = Offset(0.1f, 0.1f)
+)
 
 @Composable
 fun ScrambleGameScreen(
@@ -39,6 +53,60 @@ fun ScrambleGameScreen(
 ) {
     val uiState = viewModel.uiState.collectAsState()
 
+    val balls = remember { mutableStateListOf<Ball>() }
+
+    repeat(10) {
+        balls.add(
+            Ball(
+                pos = Offset(Random.nextFloat(), 0f),
+                directionVector = Offset(Random.nextFloat() / 100, Random.nextFloat() / 100)
+            )
+        )
+    }
+
+    // Запускаем coroutine для обновления позиции шариков
+    LaunchedEffect(Unit) {
+        while (true) {
+            balls.forEachIndexed { index, ball ->
+                // Обновляем позицию каждого шарика, добавляя его вектор направления
+                balls[index] = ball.copy(
+                    pos = Offset(
+                        x = ball.pos.x + ball.directionVector.x,
+                        y = ball.pos.y + ball.directionVector.y
+                    )
+                )
+            }
+            delay(16) // задержка для плавности (60 FPS)
+        }
+    }
+
+
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.Gray)
+            .blur(radius = 10.dp)
+            .drawBehind {
+                val gradient = Brush.linearGradient(
+                    colors = listOf(Color.Red, Color.Blue),
+                    start = Offset.Zero,
+                    end = Offset(size.width, size.height)
+                )
+                drawRect(gradient)
+
+                balls.forEach {
+                    val screenPos = Offset(
+                        x = it.pos.x * size.width,
+                        y = it.pos.y * size.height
+                    )
+                    drawCircle(
+                        color = Color.White,
+                        radius = 50f,
+                        center = screenPos
+                    )
+                }
+            },
+    )
 
     Box(
         modifier = modifier
@@ -48,7 +116,7 @@ fun ScrambleGameScreen(
 
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            val sourceWord by rememberSaveable { mutableStateOf("Window") }
+            val sourceWord by rememberSaveable { mutableStateOf(uiState.value.currentScrambleWord) }
 
             // На основе сравнения с этой строкой будут загружаться анимации видимости букв
             var processedWord by remember { mutableStateOf(sourceWord) }
@@ -63,34 +131,46 @@ fun ScrambleGameScreen(
 
                     AnimatedVisibility(isVisible) {
                         Card(
-                            Modifier
+                            modifier = Modifier
                                 .padding(horizontal = 1.dp)
-                                .clickable { isVisible = false })
+                                .clickable { isVisible = false },
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.onPrimary.copy(
+                                    alpha = 0.2f
+                                )
+                            )
+                        )
+
                         {
-                            Text(symbol.toString(), fontSize = 36.sp)
+                            Text(
+                                modifier = Modifier.padding(all = 2.dp),
+                                text = symbol.toString(),
+                                fontSize = 36.sp,
+                            )
                         }
                     }
                 }
             }
 
-            OutlinedTextField(
-                modifier = Modifier.padding(top = 16.dp),
-                value = inputString,
-                onValueChange = { newInput ->
+            Box(modifier = Modifier.padding(top = 16.dp)) {
+                OutlinedTextField(
+                    value = inputString,
+                    onValueChange = { newInput ->
 
-                    val filterResult = filterInputText(
-                        inputTxtVal = newInput,
-                        sourceFilterTxt = sourceWord
-                    )
+                        val filterResult = filterInputText(
+                            inputTxtVal = newInput,
+                            sourceFilterTxt = sourceWord
+                        )
 
-                    inputString = filterResult.first
-                    processedWord = filterResult.second
-                },
-                shape = RoundedCornerShape(percent = 50),
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary
-                ),
-            )
+                        inputString = filterResult.first
+                        processedWord = filterResult.second
+                    },
+                    shape = RoundedCornerShape(percent = 50),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                )
+            }
         }
     }
 }
