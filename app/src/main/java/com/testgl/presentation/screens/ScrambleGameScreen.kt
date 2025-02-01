@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.testgl.presentation.screens.components.FallingLetter
+import com.testgl.presentation.screens.components.Space
 import com.testgl.presentation.theme.AppTheme
 import com.testgl.presentation.viewmodels.ScrambleGameViewModel
 
@@ -163,10 +165,10 @@ fun filterInputText(inputTxtVal: String, sourceFilterTxt: String): String {
 }
 
 /**
- * Эта функция проверяет, встречаются ли символы из `sourceWord` в строке `inputTxt`.
- * Для каждого символа в `sourceWord` она возвращает `true`, если символ **не встречается**
- * в `inputTxt`, и `false`, если **встречается**. Повторяющиеся символы в `sourceWord`
- * обрабатываются корректно, и каждый символ проверяется только один раз.
+ * Эта функция сравнивает исходное слово `sourceWord` с вводом пользователя `inputTxt`
+ * Для всех букв в исходном слове, сопоставляется лист Boolean со значением true,
+ * если буква введена пользователем и false, если такой буквы нет в поле ввода.
+ * На основе данного листа можно установить видимость каждой буквы в исходном слове
  *
  * @param inputTxt Строка, в которой мы проверяем наличие символов из `sourceWord`.
  * @param sourceWord Строка, символы которой проверяются на наличие в `inputTxt`.

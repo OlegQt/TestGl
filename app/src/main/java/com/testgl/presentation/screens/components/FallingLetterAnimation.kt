@@ -1,4 +1,4 @@
-package com.testgl.presentation.screens
+package com.testgl.presentation.screens.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
