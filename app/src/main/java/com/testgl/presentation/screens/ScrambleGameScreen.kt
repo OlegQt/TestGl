@@ -1,6 +1,9 @@
 package com.testgl.presentation.screens
 
 import android.content.res.Configuration
+import android.media.AudioAttributes
+import android.media.SoundPool
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +19,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -28,12 +32,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.testgl.R
+import com.testgl.presentation.model.SoundType
 import com.testgl.presentation.screens.components.FallingLetter
 import com.testgl.presentation.screens.components.Space
 import com.testgl.presentation.theme.AppTheme
@@ -46,18 +53,50 @@ fun ScrambleGameScreen(
 ) {
     val uiState = viewModel.uiState.collectAsState()
 
-    Space(modifier = modifier.fillMaxSize())
+    val soundPool = remember {
+        SoundPool.Builder()
+            .setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_GAME)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build()
+            )
+            .setMaxStreams(10)
+            .build()
+    }
 
+    val soundIdMap = mutableMapOf<SoundType, Int>()
+    soundIdMap[SoundType.RisingLetter] =
+        soundPool.load(LocalContext.current, R.raw.rising_letter_sond, 1)
+    soundIdMap[SoundType.FallingLetter] =
+        soundPool.load(LocalContext.current, R.raw.fall_letter_sound, 1)
+    soundIdMap[SoundType.Bip] =
+        soundPool.load(LocalContext.current, R.raw.bip_sound, 1)
+
+
+    val playSoundFun: (SoundType) -> Unit = {
+        soundIdMap[it]?.let { it1 -> soundPool.play(it1, 1f, 1f, 1, 0, 0f) }
+    }
+
+
+    DisposableEffect(Unit) {
+        onDispose {
+            soundPool.release()
+        }
+    }
+
+    Space(modifier = modifier.fillMaxSize())
     Box(modifier = modifier, content = {
         GameCard(
-            sourceWord = uiState.value.currentScrambleWord
+            sourceWord = uiState.value.currentScrambleWord,
+            playSound = playSoundFun
         )
     })
 }
 
 
 @Composable
-fun GameCard(sourceWord: String) {
+fun GameCard(sourceWord: String, playSound: (SoundType) -> Unit = {}) {
     var inputString by rememberSaveable { mutableStateOf("") }
     val scrambleWordYOffset by remember { mutableIntStateOf(256) }
 
@@ -67,14 +106,16 @@ fun GameCard(sourceWord: String) {
             .fillMaxWidth()
             .padding(top = 16.dp),
         textLine = sourceWord,
-        checkLettersVisibility(inputString, sourceWord)
+        checkLettersVisibility(inputString, sourceWord),
+        playSound = playSound
     )
 
     Card(
         modifier = Modifier
             .height(256.dp)
             .offset { IntOffset(0, scrambleWordYOffset) }
-            .padding(top = 0.dp, start = 16.dp, end = 16.dp),
+            .padding(top = 0.dp, start = 16.dp, end = 16.dp)
+            .clickable { playSound(SoundType.Bip) },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.05f)
         )
@@ -98,7 +139,8 @@ fun GameCard(sourceWord: String) {
 fun FallingTextString(
     modifier: Modifier = Modifier,
     textLine: String,
-    visibilityList: List<Boolean>
+    visibilityList: List<Boolean>,
+    playSound: (SoundType) -> Unit = {}
 ) {
     var animationHeight by remember { mutableFloatStateOf(0f) }
 
@@ -115,7 +157,8 @@ fun FallingTextString(
                 symbol = charSymbol,
                 charIndex = charIndex,
                 visibility = isVisible,
-                rowHeight = animationHeight.toInt()
+                rowHeight = animationHeight.toInt(),
+                playSound = playSound
             )
         }
     }
