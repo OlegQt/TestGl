@@ -24,7 +24,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,11 +33,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.testgl.presentation.theme.AppTheme
 import com.testgl.presentation.viewmodels.ScrambleGameViewModel
 
-data class Ball(
-    var pos: Offset = Offset(0f, 0f),
-    val directionVector: Offset = Offset(0.1f, 0.1f)
-)
-
 @Composable
 fun ScrambleGameScreen(
     modifier: Modifier = Modifier,
@@ -46,10 +40,7 @@ fun ScrambleGameScreen(
 ) {
     val uiState = viewModel.uiState.collectAsState()
 
-
-
-
-    Space(modifier = Modifier.fillMaxSize())
+    Space(modifier = modifier)
 
     Box(
         modifier = modifier
