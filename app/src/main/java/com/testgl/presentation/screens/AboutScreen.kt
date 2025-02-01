@@ -1,15 +1,12 @@
 package com.testgl.presentation.screens
 
 import android.content.res.Configuration
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -43,7 +39,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.testgl.presentation.theme.AppTheme
 import kotlin.math.abs
 import kotlin.math.sin
@@ -104,35 +99,6 @@ fun CardText(text: String) {
             }
         }
     }
-}
-
-@Composable
-fun FallingLetter(
-    symbol: Char = Char(0),
-    visibility: Boolean = true,
-    rowHeight: Int = 0,
-    charIndex: Int = 0
-) {
-    val duration = charIndex * 80
-
-    AnimatedVisibility(
-        visible = visibility,
-        enter = slideInVertically(
-            initialOffsetY = { -rowHeight },
-            animationSpec = tween(durationMillis = 500 + duration)
-        ),
-        exit = slideOutVertically(
-            targetOffsetY = { -rowHeight },
-            animationSpec = tween(durationMillis = 1500 - duration)
-        )
-
-    ) {
-        Text(
-            text = symbol.toString(),
-            fontSize = 34.sp
-        )
-    }
-
 }
 
 @Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
