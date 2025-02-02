@@ -52,7 +52,7 @@ fun ScreenPreview() {
 fun ShowScreenContent(playSound: (SoundType) -> Unit = {}) {
     val navigation = rememberNavController()
 
-    var selectedScreen by rememberSaveable { mutableIntStateOf(0) }
+    var selectedScreen by rememberSaveable { mutableIntStateOf(1) }
 
     val navigateToScreen: () -> Unit = {
         when (selectedScreen) {
@@ -76,9 +76,11 @@ fun ShowScreenContent(playSound: (SoundType) -> Unit = {}) {
 
     val bottomBar: @Composable () -> Unit = {
         BottomBar(onClick = {
-            selectedScreen = it
-            navigateToScreen()
-            playSound(SoundType.Bip)
+            if (selectedScreen != it) {
+                selectedScreen = it
+                navigateToScreen()
+                playSound(SoundType.Bip)
+            }
         })
     }
 

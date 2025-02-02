@@ -1,6 +1,12 @@
 package com.testgl.presentation.screens
 
 import android.content.res.Configuration
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,11 +17,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,9 +40,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -55,14 +71,23 @@ fun ScrambleGameScreen(
     }, content = {
         GameCard(
             sourceWord = uiState.value.currentScrambleWord,
-            playSound = playSoundFun
+            score = uiState.value.gameScore,
+            hintWord = uiState.value.hint,
+            playSound = playSoundFun,
+            event = { viewModel.eventListener(it) }
         )
     })
 }
 
 
 @Composable
-fun GameCard(sourceWord: String, playSound: (SoundType) -> Unit = {}) {
+fun GameCard(
+    sourceWord: String,
+    score: Int = 0,
+    hintWord: String = "",
+    playSound: (SoundType) -> Unit = {},
+    event: (Int) -> Unit = {}
+) {
     var inputString by rememberSaveable { mutableStateOf("") }
     val scrambleWordYOffset by remember { mutableIntStateOf(256) }
 
@@ -89,7 +114,7 @@ fun GameCard(sourceWord: String, playSound: (SoundType) -> Unit = {}) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Bottom
         ) {
             UserInput(
                 textLine = inputString,
@@ -97,8 +122,57 @@ fun GameCard(sourceWord: String, playSound: (SoundType) -> Unit = {}) {
                     inputString = filterInputText(inputTxtVal = txt, sourceFilterTxt = sourceWord)
                 }
             )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp, horizontal = 16.dp),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { event(1) }) {
+                    Icon(
+                        modifier = Modifier
+                            .rotation()
+                            .size(size = 48.dp),
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = null
+                    )
+                }
+                IconButton(onClick = { event(2) }) {
+                    Icon(
+                        modifier = Modifier
+                            .rotation()
+                            .size(size = 48.dp),
+                        imageVector = Icons.Outlined.Warning,
+                        contentDescription = null
+                    )
+
+                }
+                Text(
+                    modifier = Modifier.weight(0.5f),
+                    text = hintWord,
+                    fontSize = 34.sp,
+                    textAlign = TextAlign.End
+                )
+            }
         }
     }
+}
+
+fun Modifier.rotation() = composed {
+    val anim = rememberInfiniteTransition(label = "infiniteRotation")
+
+    val angle by anim.animateFloat(
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 2000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        initialValue = 0.0f,
+        targetValue = 1.0f,
+        label = "angle"
+    )
+    Modifier.rotate(degrees = angle * 45)
 }
 
 @Composable

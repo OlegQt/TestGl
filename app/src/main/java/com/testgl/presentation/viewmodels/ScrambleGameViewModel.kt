@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.update
 
 class ScrambleGameViewModel : ViewModel() {
     private var currentWord: String = ""
+    private var hint: String = ""
     private var squore = 0
 
     private val userWords = mutableListOf<String>()
@@ -74,12 +75,31 @@ class ScrambleGameViewModel : ViewModel() {
         }
     }
 
-    fun checkIfUnscrambled(userWord: String) {
-
+    private fun reshuffle() {
+        _uiState.update {
+            it.copy(currentScrambleWord = String(currentWord.toCharArray().apply { shuffle() }))
+        }
     }
 
-    fun showAdvise() {
+    fun eventListener(eventId: Int) {
+        when (eventId) {
+            1 -> reshuffle()
+            2 -> showHint()
+        }
+    }
 
+    fun checkIfUnscrambled(userWord: String) {
+        if (userWord.equals(other = currentWord, ignoreCase = true)) {
+            pickNewWord()
+            squore++
+            _uiState.update { it.copy(gameScore = squore) }
+        }
+    }
+
+    private fun showHint() {
+        _uiState.update {
+            it.copy(hint = currentWord)
+        }
     }
 
 }

@@ -38,9 +38,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun loadSounds() {
+        // Strong BIP sound
         viewModel.getSoundPool()?.load(this, R.raw.bip_sound, 0)?.let {
             viewModel.loadSound(SoundType.Bip, it)
         }
+
+
     }
 
     private fun setUpObservation() {
