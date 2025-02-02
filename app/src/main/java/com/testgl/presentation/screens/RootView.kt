@@ -35,6 +35,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.testgl.presentation.model.SoundType
 import com.testgl.presentation.navigation.Graph
 import com.testgl.presentation.navigation.Navigation
 import com.testgl.presentation.theme.AppTheme
@@ -48,7 +49,7 @@ fun ScreenPreview() {
 }
 
 @Composable
-fun ShowScreenContent() {
+fun ShowScreenContent(playSound: (SoundType) -> Unit = {}) {
     val navigation = rememberNavController()
 
     var selectedScreen by rememberSaveable { mutableIntStateOf(0) }
@@ -77,6 +78,7 @@ fun ShowScreenContent() {
         BottomBar(onClick = {
             selectedScreen = it
             navigateToScreen()
+            playSound(SoundType.Bip)
         })
     }
 
@@ -88,12 +90,12 @@ fun ShowScreenContent() {
                 navController = navigation,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(inPad)
+                    .padding(inPad),
+                playSound = playSound
             )
         })
 
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

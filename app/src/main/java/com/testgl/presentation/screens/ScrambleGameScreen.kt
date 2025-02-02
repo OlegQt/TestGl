@@ -1,8 +1,6 @@
 package com.testgl.presentation.screens
 
 import android.content.res.Configuration
-import android.media.AudioAttributes
-import android.media.SoundPool
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,7 +17,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -32,14 +29,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.testgl.R
 import com.testgl.presentation.model.SoundType
 import com.testgl.presentation.screens.components.FallingLetter
 import com.testgl.presentation.screens.components.Space
@@ -49,44 +44,15 @@ import com.testgl.presentation.viewmodels.ScrambleGameViewModel
 @Composable
 fun ScrambleGameScreen(
     modifier: Modifier = Modifier,
-    viewModel: ScrambleGameViewModel = viewModel()
+    viewModel: ScrambleGameViewModel = viewModel(),
+    playSoundFun: (SoundType) -> Unit = {}
 ) {
     val uiState = viewModel.uiState.collectAsState()
 
-    val soundPool = remember {
-        SoundPool.Builder()
-            .setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_GAME)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .build()
-            )
-            .setMaxStreams(10)
-            .build()
-    }
-
-    val soundIdMap = mutableMapOf<SoundType, Int>()
-    soundIdMap[SoundType.RisingLetter] =
-        soundPool.load(LocalContext.current, R.raw.rising_letter_sond, 1)
-    soundIdMap[SoundType.FallingLetter] =
-        soundPool.load(LocalContext.current, R.raw.fall_letter_sound, 1)
-    soundIdMap[SoundType.Bip] =
-        soundPool.load(LocalContext.current, R.raw.bip_sound, 1)
-
-
-    val playSoundFun: (SoundType) -> Unit = {
-        soundIdMap[it]?.let { it1 -> soundPool.play(it1, 1f, 1f, 1, 0, 0f) }
-    }
-
-
-    DisposableEffect(Unit) {
-        onDispose {
-            soundPool.release()
-        }
-    }
-
     Space(modifier = modifier.fillMaxSize())
-    Box(modifier = modifier, content = {
+    Box(modifier = modifier.clickable {
+        playSoundFun(SoundType.WrongBeep)
+    }, content = {
         GameCard(
             sourceWord = uiState.value.currentScrambleWord,
             playSound = playSoundFun

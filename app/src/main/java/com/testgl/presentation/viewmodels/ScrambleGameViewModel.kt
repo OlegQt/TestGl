@@ -78,4 +78,8 @@ class ScrambleGameViewModel : ViewModel() {
 
     }
 
+    fun showAdvise() {
+
+    }
+
 }

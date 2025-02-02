@@ -20,9 +20,9 @@ fun FallingLetter(
     val duration = charIndex * 80
 
     if (visibility) {
-        playSound(SoundType.FallingLetter)
+        playSound(SoundType.Bip)
     } else {
-        playSound(SoundType.RisingLetter)
+        playSound(SoundType.StrangeBeep)
     }
 
     AnimatedVisibility(
