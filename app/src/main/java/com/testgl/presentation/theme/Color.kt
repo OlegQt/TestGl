@@ -38,7 +38,7 @@ val surfaceContainerLight = Color(0xFFF1EDEA)
 val surfaceContainerHighLight = Color(0xFFEBE7E5)
 val surfaceContainerHighestLight = Color(0xFFE5E2DF)
 
-val primaryDark = Color(0xFFFF6E61) // 0xFFC8C6C6
+val primaryDark = Color(0xFFBB86FC) // (основной цвет для кнопок и акцентов)
 val onPrimaryDark = Color(0xFF303030) // 0xFF303030
 val primaryContainerDark = Color(0xFF272727) // 0xFF272727
 val onPrimaryContainerDark = Color(0xFFB4B2B2) // 0xFFB4B2B2
@@ -55,7 +55,7 @@ val onErrorDark = Color(0xFF690005) // 0xFF690005
 val errorContainerDark = Color(0xFFD83831) // 0xFFD83831
 val onErrorContainerDark = Color(0xFFFFFFFF) // 0xFFFFFFFF
 val backgroundDark = Color(0xFF141313) // 0xFF141313
-val onBackgroundDark = Color(0xFFD83831) // 0xFFE5E2E1 **
+val onBackgroundDark = Color(0xFFE6E6FA) // 0xFFE5E2E1 **
 val surfaceDark = Color(0xFF141312) // 0xFF141312
 val onSurfaceDark = Color(0xFFCDC6B4) // 0xFFE5E2DF ** Текст на фоне весь
 val surfaceVariantDark = Color(0xFF3E4850) // 0xFF3E4850
@@ -70,11 +70,13 @@ val surfaceDimDark = Color(0xFF141312)
 val surfaceBrightDark = Color(0xFF3A3937)
 val surfaceContainerLowestDark = Color(0xFF0E0E0D)
 val surfaceContainerLowDark = Color(0xFF1C1B1A)
-val surfaceContainerDark = Color(0xFF20201E)
+val surfaceContainerDark = Color(0xFF141312)
 val surfaceContainerHighDark = Color(0xFF2B2A28)
 val surfaceContainerHighestDark = Color(0xFF353533)
 
-
+/*val surfaceDark = Color(0xFF690005) // TopAppBar
+val onBackgroundDark = Color(0xFFFFFFFF)  // Белый (текст на фоне приложения)
+val surfaceContainerDark = Color(0xFF31302F) // Средний синий (фон для контейнеров) bottom navigation*/
 
 
 

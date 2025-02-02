@@ -138,7 +138,7 @@ fun ScoreCard(score: Int = 0) {
             modifier = Modifier.padding(all = 8.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.onTertiaryContainer.copy(
-                    alpha = 0.1f
+                    alpha = 0.6f
                 )
             )
         ) {
