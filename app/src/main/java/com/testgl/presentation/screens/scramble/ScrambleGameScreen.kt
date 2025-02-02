@@ -1,4 +1,4 @@
-package com.testgl.presentation.screens
+package com.testgl.presentation.screens.scramble
 
 import android.content.res.Configuration
 import androidx.compose.animation.core.LinearEasing
@@ -55,7 +55,6 @@ import com.testgl.presentation.model.SoundType
 import com.testgl.presentation.screens.components.FallingLetter
 import com.testgl.presentation.screens.components.Space
 import com.testgl.presentation.theme.AppTheme
-import com.testgl.presentation.viewmodels.ScrambleGameViewModel
 
 @Composable
 fun ScrambleGameScreen(
@@ -64,8 +63,10 @@ fun ScrambleGameScreen(
     playSoundFun: (SoundType) -> Unit = {}
 ) {
     val uiState = viewModel.uiState.collectAsState()
+    val onEvent: (EventType) -> Unit = { viewModel.onEvent(it) }
 
     Space(modifier = modifier.fillMaxSize())
+
     Box(modifier = modifier.clickable {
         playSoundFun(SoundType.WrongBeep)
     }, content = {
@@ -74,7 +75,7 @@ fun ScrambleGameScreen(
             score = uiState.value.gameScore,
             hintWord = uiState.value.hint,
             playSound = playSoundFun,
-            event = { viewModel.eventListener(it) }
+            event = onEvent
         )
     })
 }
@@ -86,7 +87,7 @@ fun GameCard(
     score: Int = 0,
     hintWord: String = "",
     playSound: (SoundType) -> Unit = {},
-    event: (Int) -> Unit = {}
+    event: (EventType) -> Unit = {}
 ) {
     var inputString by rememberSaveable { mutableStateOf("") }
     val scrambleWordYOffset by remember { mutableIntStateOf(256) }
@@ -100,6 +101,8 @@ fun GameCard(
         checkLettersVisibility(inputString, sourceWord),
         playSound = playSound
     )
+
+    ScoreCard(score = score)
 
     Card(
         modifier = Modifier
@@ -120,43 +123,78 @@ fun GameCard(
                 textLine = inputString,
                 userInputFun = { txt ->
                     inputString = filterInputText(inputTxtVal = txt, sourceFilterTxt = sourceWord)
+                    event(EventType.CheckAnswer(inputString))
                 }
             )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp, horizontal = 16.dp),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = { event(1) }) {
-                    Icon(
-                        modifier = Modifier
-                            .rotation()
-                            .size(size = 48.dp),
-                        imageVector = Icons.Default.Refresh,
-                        contentDescription = null
-                    )
-                }
-                IconButton(onClick = { event(2) }) {
-                    Icon(
-                        modifier = Modifier
-                            .rotation()
-                            .size(size = 48.dp),
-                        imageVector = Icons.Outlined.Warning,
-                        contentDescription = null
-                    )
-
-                }
-                Text(
-                    modifier = Modifier.weight(0.5f),
-                    text = hintWord,
-                    fontSize = 34.sp,
-                    textAlign = TextAlign.End
-                )
-            }
+            OperationButtons(hintWord = hintWord, event = event)
         }
+    }
+}
+
+@Composable
+fun ScoreCard(score: Int = 0) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
+        Card(
+            modifier = Modifier.padding(all = 8.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.onTertiaryContainer.copy(
+                    alpha = 0.1f
+                )
+            )
+        ) {
+            Text(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp),
+                text = "Score $score"
+            )
+        }
+    }
+}
+
+@Composable
+fun OperationButtons(
+    hintWord: String = "",
+    playSound: (SoundType) -> Unit = {},
+    event: (EventType) -> Unit = {}
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp, horizontal = 16.dp),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = { event(EventType.ShuffleWordAgain) }) {
+            Icon(
+                modifier = Modifier
+                    .rotation()
+                    .size(size = 48.dp),
+                imageVector = Icons.Default.Refresh,
+                contentDescription = null
+            )
+        }
+        IconButton(onClick = {
+            event(
+                EventType.ShowHint(
+                    level =
+                    1
+                )
+            )
+        }) {
+            Icon(
+                modifier = Modifier
+                    .rotation()
+                    .size(size = 48.dp),
+                imageVector = Icons.Outlined.Warning,
+                contentDescription = null
+            )
+
+        }
+        Text(
+            modifier = Modifier.weight(0.5f),
+            text = hintWord,
+            fontSize = 34.sp,
+            textAlign = TextAlign.End
+        )
     }
 }
 

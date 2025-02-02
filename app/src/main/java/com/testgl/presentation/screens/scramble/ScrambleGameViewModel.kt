@@ -1,7 +1,6 @@
-package com.testgl.presentation.viewmodels
+package com.testgl.presentation.screens.scramble
 
 import androidx.lifecycle.ViewModel
-import com.testgl.presentation.model.ScrambleUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -81,25 +80,25 @@ class ScrambleGameViewModel : ViewModel() {
         }
     }
 
-    fun eventListener(eventId: Int) {
-        when (eventId) {
-            1 -> reshuffle()
-            2 -> showHint()
-        }
-    }
-
-    fun checkIfUnscrambled(userWord: String) {
+    private fun checkAnswer(userWord: String) {
         if (userWord.equals(other = currentWord, ignoreCase = true)) {
-            pickNewWord()
             squore++
             _uiState.update { it.copy(gameScore = squore) }
         }
     }
 
-    private fun showHint() {
+    private fun showHint(level: Int) {
         _uiState.update {
             it.copy(hint = currentWord)
         }
     }
 
+    fun onEvent(event: EventType) {
+        when (event) {
+            EventType.PickNewWord -> pickNewWord()
+            is EventType.ShowHint -> showHint(level = event.level)
+            EventType.ShuffleWordAgain -> reshuffle()
+            is EventType.CheckAnswer -> checkAnswer(event.answer)
+        }
+    }
 }

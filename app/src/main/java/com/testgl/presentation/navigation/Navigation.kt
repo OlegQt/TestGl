@@ -10,7 +10,7 @@ import androidx.navigation.compose.composable
 import com.testgl.presentation.model.SoundType
 import com.testgl.presentation.screens.AboutScreen
 import com.testgl.presentation.screens.GreetingScreen
-import com.testgl.presentation.screens.ScrambleGameScreen
+import com.testgl.presentation.screens.scramble.ScrambleGameScreen
 
 @Composable
 fun Navigation(

@@ -1,4 +1,4 @@
-package com.testgl.presentation.screens
+package com.testgl.presentation.screens.rootscreen
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.fillMaxSize

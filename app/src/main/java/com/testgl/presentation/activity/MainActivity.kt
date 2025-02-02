@@ -10,9 +10,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.testgl.R
 import com.testgl.presentation.model.SoundType
-import com.testgl.presentation.screens.ShowScreenContent
+import com.testgl.presentation.screens.rootscreen.ShowScreenContent
 import com.testgl.presentation.theme.AppTheme
-import com.testgl.presentation.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
