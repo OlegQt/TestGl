@@ -172,14 +172,7 @@ fun OperationButtons(
                 contentDescription = null
             )
         }
-        IconButton(onClick = {
-            event(
-                EventType.ShowHint(
-                    level =
-                    1
-                )
-            )
-        }) {
+        IconButton(onClick = { event(EventType.ShowHint(level = 1)) }) {
             Icon(
                 modifier = Modifier
                     .rotation()
@@ -187,11 +180,25 @@ fun OperationButtons(
                 imageVector = Icons.Outlined.Warning,
                 contentDescription = null
             )
-
         }
+
+        val hintTxt = if (hintWord.isNotEmpty()) {
+            hintWord.replaceRange(
+                1,
+                hintWord.length - 1,
+                StringBuilder().apply {
+                    repeat(hintWord.length - 2) {
+                        append("*")
+                    }
+                }
+            )
+        } else {
+            hintWord
+        }
+
         Text(
             modifier = Modifier.weight(0.5f),
-            text = hintWord,
+            text = hintTxt,
             fontSize = 34.sp,
             textAlign = TextAlign.End
         )
