@@ -1,12 +1,15 @@
 package com.testgl.presentation.screens.scramble
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Card
@@ -67,17 +71,17 @@ fun ScrambleGameScreen(
 
     Space(modifier = modifier.fillMaxSize())
 
-    Box(modifier = modifier.clickable {
-        playSoundFun(SoundType.WrongBeep)
-    }, content = {
-        GameCard(
-            sourceWord = uiState.value.currentScrambleWord,
-            score = uiState.value.gameScore,
-            hintWord = uiState.value.hint,
-            playSound = playSoundFun,
-            event = onEvent
-        )
-    })
+    Box(
+        modifier = modifier.clickable { playSoundFun(SoundType.WrongBeep) },
+        content = {
+            GameCard(
+                sourceWord = uiState.value.currentScrambleWord,
+                score = uiState.value.gameScore,
+                hintWord = uiState.value.hint,
+                playSound = playSoundFun,
+                event = onEvent
+            )
+        })
 }
 
 
@@ -92,24 +96,14 @@ fun GameCard(
     var inputString by rememberSaveable { mutableStateOf("") }
     val scrambleWordYOffset by remember { mutableIntStateOf(256) }
 
-    FallingTextString(
-        modifier = Modifier
-            .offset { IntOffset(0, scrambleWordYOffset) }
-            .fillMaxWidth()
-            .padding(top = 16.dp),
-        textLine = sourceWord,
-        checkLettersVisibility(inputString, sourceWord),
-        playSound = playSound
-    )
-
     ScoreCard(score = score)
 
     Card(
         modifier = Modifier
             .height(256.dp)
             .offset { IntOffset(0, scrambleWordYOffset) }
-            .padding(top = 0.dp, start = 16.dp, end = 16.dp)
-            .clickable { playSound(SoundType.Bip) },
+            .padding(top = 0.dp, start = 16.dp, end = 16.dp),
+        //.clickable { event(EventType.PickNewWord) },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.05f)
         )
@@ -129,6 +123,20 @@ fun GameCard(
             OperationButtons(hintWord = hintWord, event = event)
         }
     }
+
+    FallingTextString(
+        modifier = Modifier
+            .offset { IntOffset(0, scrambleWordYOffset) }
+            .fillMaxWidth()
+            .padding(top = 16.dp),
+        textLine = sourceWord,
+        checkLettersVisibility(inputString, sourceWord),
+        playSound = playSound,
+        onLetterPush = {
+            inputString = inputString.plus(it)
+            event(EventType.CheckAnswer(inputString))
+        }
+    )
 }
 
 @Composable
@@ -225,13 +233,14 @@ fun FallingTextString(
     modifier: Modifier = Modifier,
     textLine: String,
     visibilityList: List<Boolean>,
-    playSound: (SoundType) -> Unit = {}
+    playSound: (SoundType) -> Unit = {},
+    onLetterPush: (Char) -> Unit = {}
 ) {
-    var animationHeight by remember { mutableFloatStateOf(0f) }
+    var rowHeight by remember { mutableFloatStateOf(0f) }
 
     Row(
         modifier = modifier.onGloballyPositioned { layoutCoordinates ->
-            animationHeight = layoutCoordinates.positionInRoot().y
+            rowHeight = layoutCoordinates.positionInRoot().y
         },
         horizontalArrangement = Arrangement.Center
     ) {
@@ -240,10 +249,10 @@ fun FallingTextString(
 
             FallingLetter(
                 symbol = charSymbol,
-                charIndex = charIndex,
                 visibility = isVisible,
-                rowHeight = animationHeight.toInt(),
-                playSound = playSound
+                rowHeight = rowHeight.toInt(),
+                playSound = playSound,
+                onLetterClickListener = onLetterPush
             )
         }
     }
@@ -256,6 +265,22 @@ fun UserInput(textLine: String, userInputFun: (String) -> Unit = {}) {
         onValueChange = { newInput -> userInputFun(newInput) },
         shape = RoundedCornerShape(percent = 50),
         textStyle = TextStyle.Default.copy(fontSize = 28.sp),
+        trailingIcon = {
+            AnimatedVisibility(
+                visible = textLine.isNotBlank(),
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                IconButton(onClick = { userInputFun("") }) {
+
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = null
+                    )
+                }
+            }
+
+        }
     )
 }
 
