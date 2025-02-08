@@ -102,8 +102,8 @@ fun GameCard(
         modifier = Modifier
             .height(256.dp)
             .offset { IntOffset(0, scrambleWordYOffset) }
-            .padding(top = 0.dp, start = 16.dp, end = 16.dp),
-        //.clickable { event(EventType.PickNewWord) },
+            .padding(top = 0.dp, start = 16.dp, end = 16.dp)
+            .clickable { event(EventType.PickNewWord) },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.05f)
         )

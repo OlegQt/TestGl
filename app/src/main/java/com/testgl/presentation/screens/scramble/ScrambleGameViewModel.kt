@@ -62,9 +62,57 @@ class ScrambleGameViewModel : ViewModel() {
             "Eclipse",
             "Meteor",
             "Astronaut",
-            "Professor"
+            "Professor",
+            "Сопротивление",      // Resistance
+            "Оккультный",         // Occult
+            "Невозможность",      // Impossibility
+            "Экспоненциальный",   // Exponential
+            "Противоречие",       // Contradiction
+            "Математика",         // Mathematics
+            "Независимость",      // Independence
+            "Трансцендентальный", // Transcendental
+            "Антропология",       // Anthropology
+            "Феноменология",      // Phenomenology
+            "Суперпозиция",       // Superposition
+            "Конфиденциальность", // Confidentiality
+            "Метаморфозы",        // Metamorphosis
+            "Квантовый",          // Quantum
+            "Невозможный",        // Impossible
+            "Теорема",            // Theorem
+            "Многомерный",        // Multidimensional
+            "Парадигма",          // Paradigm
+            "Генерация",          // Generation
+            "Нейропсихология",     // Neuropsychology
+            "Психоанализ",        // Psychoanalysis
+            "Интерпретация",      // Interpretation
+            "Генетика",           // Genetics
+            "Эволюция",           // Evolution
+            "Гипотеза",           // Hypothesis
+            "Трансформация",      // Transformation
+            "Когнитивный",        // Cognitive
+            "Детерминизм",        // Determinism
+            "Методология",        // Methodology
+            "Семиотика",          // Semiotics
+            "Эмпирический",       // Empirical
+            "Философия",          // Philosophy
+            "Социология",         // Sociology
+            "Нарратив",           // Narrative
+            "Гармония",           // Harmony
+            "Антиутопия",         // Dystopia
+            "Онтология",          // Ontology
+            "Прогнозирование",    // Forecasting
+            "Симуляция",          // Simulation
+            "Эксперимент",        // Experiment
+            "Абстракция",         // Abstraction
+            "Архетип",            // Archetype
+            "Синергия",           // Synergy
+            "Прогрессивный",      // Progressive
+            "Реализм",            // Realism
+            "Синтаксис",          // Syntax
+            "Теоретический"       // Theoretical
         )
     }
+
 
     private fun pickNewWord() {
         currentWord = getAllWords().random().uppercase()
