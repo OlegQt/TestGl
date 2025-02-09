@@ -4,12 +4,14 @@ import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -46,6 +49,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.text.TextStyle
@@ -59,6 +65,9 @@ import com.testgl.presentation.model.SoundType
 import com.testgl.presentation.screens.components.FallingLetter
 import com.testgl.presentation.screens.components.Space
 import com.testgl.presentation.theme.AppTheme
+import kotlinx.coroutines.delay
+import kotlin.math.cos
+import kotlin.math.sin
 
 @Composable
 fun ScrambleGameScreen(
@@ -142,11 +151,55 @@ fun GameCard(
 @Composable
 fun ScoreCard(score: Int = 0) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
+        val borderAnimator = rememberInfiniteTransition(label = "border")
+        var cardHalfSize by remember { mutableStateOf(Offset(0.0f, 0.0f)) }
+        var scoreIncrement by remember { mutableStateOf(false) }
+
+        LaunchedEffect(scoreIncrement) {
+            if (scoreIncrement) {
+                // Запуск анимации и отключение через 2 секунды
+                delay(2000)  // Задержка в 2 секунды
+                scoreIncrement = false  // Сброс состояния для следующего клика
+            }
+        }
+
+        val angle by borderAnimator.animateFloat(
+            targetValue = 6.28f,
+            initialValue = 0.0f,
+            animationSpec = infiniteRepeatable(
+                tween(durationMillis = 2000, easing = LinearEasing),
+                RepeatMode.Restart
+            ),
+            label = ""
+        )
+
+        val borderWith by animateDpAsState(
+            targetValue = if (scoreIncrement) 2.dp else 0.dp, label = "borderWidthAnimation"
+        )
+
         Card(
-            modifier = Modifier.padding(all = 8.dp),
+            modifier = Modifier
+                .padding(all = 8.dp)
+                .onGloballyPositioned { layoutCoordinates ->
+                    val hw = layoutCoordinates.size.width.toFloat() / 2
+                    val hh = layoutCoordinates.size.height.toFloat() / 2
+                    cardHalfSize = Offset(x = hw, y = hh)
+                },
+            onClick = { scoreIncrement = true },
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.onTertiaryContainer.copy(
                     alpha = 0.6f
+                )
+            ),
+            border = BorderStroke(
+                width = borderWith,
+                brush = Brush.sweepGradient(
+                    colors = if (scoreIncrement) listOf(Color.Yellow, Color.Magenta, Color.Yellow)
+                    else listOf(Color.Transparent, Color.Transparent),
+                    center = Offset(  // Конечная точка градиента после поворота
+                        x = cardHalfSize.x + cos(angle) * cardHalfSize.x,  // Используем угол для расчета
+                        y = cardHalfSize.y + sin(angle) * cardHalfSize.x   // Применяем синус для координаты Y
+                    )
                 )
             )
         ) {
