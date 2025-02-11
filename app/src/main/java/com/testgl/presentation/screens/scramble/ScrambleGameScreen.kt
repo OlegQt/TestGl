@@ -81,7 +81,10 @@ fun ScrambleGameScreen(
     Space(modifier = modifier.fillMaxSize())
 
     Box(
-        modifier = modifier.clickable { playSoundFun(SoundType.WrongBeep) },
+        modifier = modifier.clickable {
+            playSoundFun(SoundType.WrongBeep)
+            //isCompleted = !isCompleted
+        },
         content = {
             GameCard(
                 sourceWord = uiState.value.currentScrambleWord,
@@ -89,7 +92,8 @@ fun ScrambleGameScreen(
                 hintWord = uiState.value.hint,
                 playSound = playSoundFun,
                 event = onEvent,
-                userInputText = userInput.value
+                userInputText = userInput.value,
+                isCompleted = uiState.value.isTaskCompleted
             )
         })
 }
@@ -103,18 +107,16 @@ fun GameCard(
     playSound: (SoundType) -> Unit = {},
     event: (EventType) -> Unit = {},
     userInputText: String = "",
-    competed: Boolean = false
+    isCompleted: Boolean = false
 ) {
     val scrambleWordYOffset by remember { mutableIntStateOf(256) }
-    var isCompleted by remember { mutableStateOf(false) }
 
     ScoreCard(score = score)
 
     Card(
         modifier = Modifier
             .offset { IntOffset(0, scrambleWordYOffset) }
-            .padding(top = 0.dp, start = 16.dp, end = 16.dp)
-            .clickable { isCompleted = !isCompleted },
+            .padding(top = 0.dp, start = 16.dp, end = 16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
         )
@@ -125,7 +127,7 @@ fun GameCard(
         ) {
             UserInput(
                 textLine = userInputText,
-                isEnabled = isCompleted,
+                isEnabled = !isCompleted,
                 userInputFun = { txt ->
                     val inputString =
                         filterInputText(inputTxtVal = txt, sourceFilterTxt = sourceWord)
@@ -138,7 +140,7 @@ fun GameCard(
 
             ShowHintWord(hintString = hintWord)
 
-            OperationButtons(event = event)
+            OperationButtons(event = event, isTaskCompleted = isCompleted)
         }
     }
 
@@ -149,6 +151,7 @@ fun GameCard(
             .padding(top = 16.dp),
         textLine = sourceWord,
         visibilityList = checkLettersVisibility(userInputText, sourceWord),
+        isEnabled = !isCompleted,
         playSound = playSound,
         onLetterPush = {
             event(EventType.TypeIn(userInputText.plus(it)))
@@ -227,7 +230,8 @@ fun ScoreCard(score: Int = 0) {
 
 @Composable
 fun OperationButtons(
-    event: (EventType) -> Unit = {}
+    event: (EventType) -> Unit = {},
+    isTaskCompleted: Boolean = false
 ) {
     Column(
         modifier = Modifier
@@ -238,21 +242,23 @@ fun OperationButtons(
         OperationButton(
             label = "Shuffle",
             clickEvent = { event(EventType.ShuffleWordAgain) },
-            icon = Icons.Default.Refresh
+            icon = Icons.Default.Refresh,
+            isEnabled = !isTaskCompleted
         )
 
         OperationButton(
             label = "Show hint",
             clickEvent = { event(EventType.ShowHint(level = 1)) },
-            icon = Icons.Default.Info
+            icon = Icons.Default.Info,
+            isEnabled = !isTaskCompleted
         )
 
         OperationButton(
             label = "Pick new word",
             clickEvent = { event(EventType.PickNewWord) },
-            icon = Icons.Default.AddCircle
+            icon = Icons.Default.AddCircle,
+            isEnabled = true
         )
-
     }
 }
 
@@ -267,9 +273,10 @@ fun ShowHintWord(hintString: String) {
 fun OperationButton(
     label: String,
     clickEvent: () -> Unit = {},
-    icon: ImageVector = Icons.Default.Info
+    icon: ImageVector = Icons.Default.Info,
+    isEnabled: Boolean = true
 ) {
-    OutlinedButton(onClick = clickEvent) {
+    OutlinedButton(onClick = clickEvent, enabled = isEnabled) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 modifier = Modifier
@@ -304,6 +311,7 @@ fun FallingTextString(
     modifier: Modifier = Modifier,
     textLine: String,
     visibilityList: List<Boolean>,
+    isEnabled: Boolean = true,
     playSound: (SoundType) -> Unit = {},
     onLetterPush: (Char) -> Unit = {}
 ) {
@@ -321,6 +329,7 @@ fun FallingTextString(
             FallingLetter(
                 symbol = charSymbol,
                 visibility = isVisible,
+                enabled = isEnabled,
                 rowHeight = rowHeight.toInt(),
                 playSound = playSound,
                 onLetterClickListener = onLetterPush

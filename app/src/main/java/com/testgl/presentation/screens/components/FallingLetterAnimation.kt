@@ -16,6 +16,7 @@ import com.testgl.presentation.model.SoundType
 fun FallingLetter(
     symbol: Char = Char(0),
     visibility: Boolean = true,
+    enabled: Boolean = true,
     rowHeight: Int = 0,
     playSound: (SoundType) -> Unit = {},
     onLetterClickListener: (Char) -> Unit = {}
@@ -35,7 +36,7 @@ fun FallingLetter(
     Text(
         modifier = Modifier
             .offset { IntOffset(0, (topPadding * rowHeight).toInt()) }
-            .clickable { onLetterClickListener(symbol) },
+            .clickable { if (enabled) onLetterClickListener(symbol) },
         text = symbol.toString(),
         fontSize = 34.sp
     )

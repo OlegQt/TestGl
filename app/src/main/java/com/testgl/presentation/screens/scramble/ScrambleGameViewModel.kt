@@ -119,7 +119,8 @@ class ScrambleGameViewModel : ViewModel() {
         _uiState.update {
             it.copy(
                 currentScrambleWord = String(currentWord.toCharArray().apply { shuffle() }),
-                hint = ""
+                hint = "",
+                isTaskCompleted = false
             )
         }
 
@@ -136,7 +137,14 @@ class ScrambleGameViewModel : ViewModel() {
     private fun checkAnswer() {
         if (_userTextInput.value.equals(other = currentWord, ignoreCase = true)) {
             squore++
-            _uiState.update { it.copy(gameScore = squore, hint = "") }
+            _uiState.update {
+                it.copy(
+                    currentScrambleWord = currentWord,
+                    gameScore = squore,
+                    hint = "",
+                    isTaskCompleted = true
+                )
+            }
             _userTextInput.update { "" }
         }
     }
