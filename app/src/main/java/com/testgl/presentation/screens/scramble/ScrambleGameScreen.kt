@@ -19,20 +19,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,10 +52,10 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -109,16 +109,16 @@ fun GameCard(
 
     Card(
         modifier = Modifier
-            .height(256.dp)
+            //.height(256.dp)
             .offset { IntOffset(0, scrambleWordYOffset) }
-            .padding(top = 0.dp, start = 16.dp, end = 16.dp)
-            .clickable { event(EventType.PickNewWord) },
+            .padding(top = 0.dp, start = 16.dp, end = 16.dp),
+        //.clickable { event(EventType.ScoreInc) },
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.05f)
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
         )
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            //modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Bottom
         ) {
@@ -129,7 +129,14 @@ fun GameCard(
                     event(EventType.CheckAnswer(inputString))
                 }
             )
-            OperationButtons(hintWord = hintWord, event = event)
+
+            ShowHintWord(hintString = hintWord)
+
+            OperationButtons(
+                hintWord = hintWord,
+                clearInputTxt = { inputString = "" },
+                event = event
+            )
         }
     }
 
@@ -153,14 +160,13 @@ fun ScoreCard(score: Int = 0) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
         val borderAnimator = rememberInfiniteTransition(label = "border")
         var cardHalfSize by remember { mutableStateOf(Offset(0.0f, 0.0f)) }
-        var scoreIncrement by remember { mutableStateOf(false) }
+        var borderAnimationFlag by remember { mutableStateOf(false) }
 
-        LaunchedEffect(scoreIncrement) {
-            if (scoreIncrement) {
-                // Запуск анимации и отключение через 2 секунды
-                delay(2000)  // Задержка в 2 секунды
-                scoreIncrement = false  // Сброс состояния для следующего клика
-            }
+        LaunchedEffect(score) {
+            // Запуск анимации и отключение через 2 секунды
+            borderAnimationFlag = true
+            delay(2000)  // Задержка в 2 секунды
+            borderAnimationFlag = false  // Сброс состояния для следующего клика
         }
 
         val angle by borderAnimator.animateFloat(
@@ -174,7 +180,7 @@ fun ScoreCard(score: Int = 0) {
         )
 
         val borderWith by animateDpAsState(
-            targetValue = if (scoreIncrement) 2.dp else 0.dp, label = "borderWidthAnimation"
+            targetValue = if (borderAnimationFlag) 2.dp else 0.dp, label = "borderWidthAnimation"
         )
 
         Card(
@@ -185,16 +191,20 @@ fun ScoreCard(score: Int = 0) {
                     val hh = layoutCoordinates.size.height.toFloat() / 2
                     cardHalfSize = Offset(x = hw, y = hh)
                 },
-            onClick = { scoreIncrement = true },
+            onClick = { borderAnimationFlag = true },
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.onTertiaryContainer.copy(
-                    alpha = 0.6f
+                containerColor = MaterialTheme.colorScheme.surface.copy(
+                    alpha = 0.8f
                 )
             ),
             border = BorderStroke(
                 width = borderWith,
                 brush = Brush.sweepGradient(
-                    colors = if (scoreIncrement) listOf(Color.Yellow, Color.Magenta, Color.Yellow)
+                    colors = if (borderAnimationFlag) listOf(
+                        Color.Yellow,
+                        Color.Magenta,
+                        Color.Yellow
+                    )
                     else listOf(Color.Transparent, Color.Transparent),
                     center = Offset(  // Конечная точка градиента после поворота
                         x = cardHalfSize.x + cos(angle) * cardHalfSize.x,  // Используем угол для расчета
@@ -214,55 +224,61 @@ fun ScoreCard(score: Int = 0) {
 @Composable
 fun OperationButtons(
     hintWord: String = "",
-    playSound: (SoundType) -> Unit = {},
+    clearInputTxt: () -> Unit = {},
     event: (EventType) -> Unit = {}
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp, horizontal = 16.dp),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically
+        verticalArrangement = Arrangement.Top,
     ) {
-        IconButton(onClick = { event(EventType.ShuffleWordAgain) }) {
-            Icon(
-                modifier = Modifier
-                    .rotation()
-                    .size(size = 48.dp),
-                imageVector = Icons.Default.Refresh,
-                contentDescription = null
-            )
-        }
-        IconButton(onClick = { event(EventType.ShowHint(level = 1)) }) {
-            Icon(
-                modifier = Modifier
-                    .rotation()
-                    .size(size = 48.dp),
-                imageVector = Icons.Outlined.Warning,
-                contentDescription = null
-            )
-        }
-
-        val hintTxt = if (hintWord.isNotEmpty()) {
-            hintWord.replaceRange(
-                1,
-                hintWord.length - 1,
-                StringBuilder().apply {
-                    repeat(hintWord.length - 2) {
-                        append("*")
-                    }
-                }
-            )
-        } else {
-            hintWord
-        }
-
-        Text(
-            modifier = Modifier.weight(0.5f),
-            text = hintTxt,
-            fontSize = 34.sp,
-            textAlign = TextAlign.End
+        OperationButton(
+            label = "Shuffle",
+            clickEvent = { event(EventType.ShuffleWordAgain) },
+            icon = Icons.Default.Refresh
         )
+
+        OperationButton(
+            label = "Show hint",
+            clickEvent = { event(EventType.ShowHint(level = 1)) },
+            icon = Icons.Default.Info
+        )
+
+        OperationButton(
+            label = "Pick new word",
+            clickEvent = { event(EventType.PickNewWord) },
+            icon = Icons.Default.AddCircle
+        )
+
+    }
+}
+
+@Composable
+fun ShowHintWord(hintString: String) {
+    Text(
+        text = hintString
+    )
+}
+
+@Composable
+fun OperationButton(
+    label: String,
+    clickEvent: () -> Unit = {},
+    icon: ImageVector = Icons.Default.Info
+) {
+    OutlinedButton(onClick = clickEvent) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .rotation(),
+                imageVector = icon,
+                contentDescription = null
+            )
+            Text(text = label)
+        }
+
     }
 }
 
@@ -314,6 +330,7 @@ fun FallingTextString(
 @Composable
 fun UserInput(textLine: String, userInputFun: (String) -> Unit = {}) {
     OutlinedTextField(
+        modifier = Modifier.padding(top = 64.dp),
         value = textLine,
         onValueChange = { newInput -> userInputFun(newInput) },
         shape = RoundedCornerShape(percent = 50),
@@ -325,7 +342,6 @@ fun UserInput(textLine: String, userInputFun: (String) -> Unit = {}) {
                 exit = fadeOut()
             ) {
                 IconButton(onClick = { userInputFun("") }) {
-
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = null

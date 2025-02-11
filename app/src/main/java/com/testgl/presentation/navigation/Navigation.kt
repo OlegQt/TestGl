@@ -8,8 +8,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.testgl.presentation.model.SoundType
-import com.testgl.presentation.screens.AboutScreen
 import com.testgl.presentation.screens.GreetingScreen
+import com.testgl.presentation.screens.abouttestscreen.AboutScreen
 import com.testgl.presentation.screens.scramble.ScrambleGameScreen
 
 @Composable

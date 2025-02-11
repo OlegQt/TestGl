@@ -5,4 +5,5 @@ sealed class EventType {
     data object ShuffleWordAgain : EventType()
     data class ShowHint(val level: Int) : EventType()
     data class CheckAnswer(val answer: String) : EventType()
+    data object ScoreInc : EventType()
 }

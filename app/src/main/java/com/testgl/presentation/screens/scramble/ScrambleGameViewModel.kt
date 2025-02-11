@@ -118,7 +118,10 @@ class ScrambleGameViewModel : ViewModel() {
         currentWord = getAllWords().random().uppercase()
 
         _uiState.update {
-            it.copy(currentScrambleWord = String(currentWord.toCharArray().apply { shuffle() }))
+            it.copy(
+                currentScrambleWord = String(currentWord.toCharArray().apply { shuffle() }),
+                hint = ""
+            )
         }
     }
 
@@ -131,13 +134,28 @@ class ScrambleGameViewModel : ViewModel() {
     private fun checkAnswer(userWord: String) {
         if (userWord.equals(other = currentWord, ignoreCase = true)) {
             squore++
-            _uiState.update { it.copy(gameScore = squore) }
+            _uiState.update { it.copy(gameScore = squore, hint = "") }
         }
+    }
+
+    private fun testScoreAnimation() {
+        squore++
+        _uiState.update { it.copy(gameScore = squore) }
     }
 
     private fun showHint(level: Int) {
         _uiState.update {
-            it.copy(hint = currentWord)
+            it.copy(
+                hint = currentWord.replaceRange(
+                    startIndex = 1,
+                    endIndex = currentWord.length - 1,
+                    replacement = StringBuilder().apply {
+                        repeat(currentWord.length - 2) {
+                            append("*")
+                        }.toString()
+                    }
+                )
+            )
         }
     }
 
@@ -147,6 +165,7 @@ class ScrambleGameViewModel : ViewModel() {
             is EventType.ShowHint -> showHint(level = event.level)
             EventType.ShuffleWordAgain -> reshuffle()
             is EventType.CheckAnswer -> checkAnswer(event.answer)
+            EventType.ScoreInc -> this.testScoreAnimation()
         }
     }
 }

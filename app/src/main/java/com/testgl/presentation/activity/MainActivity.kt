@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        loadSounds()
+        //loadSounds()
 
         setContent {
             AppTheme(dynamicColor = false) {
@@ -41,8 +41,11 @@ class MainActivity : ComponentActivity() {
         viewModel.getSoundPool()?.load(this, R.raw.bip_sound, 0)?.let {
             viewModel.loadSound(SoundType.Bip, it)
         }
+    }
 
-
+    override fun onResume() {
+        super.onResume()
+        loadSounds()
     }
 
     private fun setUpObservation() {
