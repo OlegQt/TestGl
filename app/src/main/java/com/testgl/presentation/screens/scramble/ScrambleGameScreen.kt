@@ -43,7 +43,6 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -77,6 +76,7 @@ fun ScrambleGameScreen(
 ) {
     val uiState = viewModel.uiState.collectAsState()
     val onEvent: (EventType) -> Unit = { viewModel.onEvent(it) }
+    val userInput = viewModel.userInputText.collectAsState()
 
     Space(modifier = modifier.fillMaxSize())
 
@@ -88,7 +88,8 @@ fun ScrambleGameScreen(
                 score = uiState.value.gameScore,
                 hintWord = uiState.value.hint,
                 playSound = playSoundFun,
-                event = onEvent
+                event = onEvent,
+                userInputText = userInput.value
             )
         })
 }
@@ -100,33 +101,38 @@ fun GameCard(
     score: Int = 0,
     hintWord: String = "",
     playSound: (SoundType) -> Unit = {},
-    event: (EventType) -> Unit = {}
+    event: (EventType) -> Unit = {},
+    userInputText: String = "",
+    competed: Boolean = false
 ) {
-    var inputString by rememberSaveable { mutableStateOf("") }
     val scrambleWordYOffset by remember { mutableIntStateOf(256) }
+    var isCompleted by remember { mutableStateOf(false) }
 
     ScoreCard(score = score)
 
     Card(
         modifier = Modifier
-            //.height(256.dp)
             .offset { IntOffset(0, scrambleWordYOffset) }
-            .padding(top = 0.dp, start = 16.dp, end = 16.dp),
-        //.clickable { event(EventType.ScoreInc) },
+            .padding(top = 0.dp, start = 16.dp, end = 16.dp)
+            .clickable { isCompleted = !isCompleted },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
         )
     ) {
         Column(
-            //modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Bottom
         ) {
             UserInput(
-                textLine = inputString,
+                textLine = userInputText,
+                isEnabled = isCompleted,
                 userInputFun = { txt ->
-                    inputString = filterInputText(inputTxtVal = txt, sourceFilterTxt = sourceWord)
-                    event(EventType.CheckAnswer(inputString))
+                    val inputString =
+                        filterInputText(inputTxtVal = txt, sourceFilterTxt = sourceWord)
+                    event(EventType.TypeIn(inputString))
+
+                    // Check if task completed TODO: move to viewModel
+                    event(EventType.CheckAnswer)
                 }
             )
 
@@ -142,11 +148,13 @@ fun GameCard(
             .fillMaxWidth()
             .padding(top = 16.dp),
         textLine = sourceWord,
-        checkLettersVisibility(inputString, sourceWord),
+        visibilityList = checkLettersVisibility(userInputText, sourceWord),
         playSound = playSound,
         onLetterPush = {
-            inputString = inputString.plus(it)
-            event(EventType.CheckAnswer(inputString))
+            event(EventType.TypeIn(userInputText.plus(it)))
+
+            // Check if task completed TODO: move to viewModel
+            event(EventType.CheckAnswer)
         }
     )
 }
@@ -322,9 +330,10 @@ fun FallingTextString(
 }
 
 @Composable
-fun UserInput(textLine: String, userInputFun: (String) -> Unit = {}) {
+fun UserInput(textLine: String, isEnabled: Boolean = true, userInputFun: (String) -> Unit = {}) {
     OutlinedTextField(
         modifier = Modifier.padding(top = 64.dp),
+        enabled = isEnabled,
         value = textLine,
         onValueChange = { newInput -> userInputFun(newInput) },
         shape = RoundedCornerShape(percent = 50),
@@ -342,7 +351,6 @@ fun UserInput(textLine: String, userInputFun: (String) -> Unit = {}) {
                     )
                 }
             }
-
         }
     )
 }

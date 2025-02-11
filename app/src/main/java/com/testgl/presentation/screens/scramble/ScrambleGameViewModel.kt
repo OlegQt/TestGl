@@ -12,6 +12,8 @@ class ScrambleGameViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(ScrambleUiState())
     val uiState = _uiState.asStateFlow()
 
+    private val _userTextInput = MutableStateFlow("")
+    val userInputText = _userTextInput.asStateFlow()
 
     init {
         pickNewWord()
@@ -120,6 +122,9 @@ class ScrambleGameViewModel : ViewModel() {
                 hint = ""
             )
         }
+
+        _userTextInput.update { "" }
+
     }
 
     private fun reshuffle() {
@@ -128,10 +133,11 @@ class ScrambleGameViewModel : ViewModel() {
         }
     }
 
-    private fun checkAnswer(userWord: String) {
-        if (userWord.equals(other = currentWord, ignoreCase = true)) {
+    private fun checkAnswer() {
+        if (_userTextInput.value.equals(other = currentWord, ignoreCase = true)) {
             squore++
             _uiState.update { it.copy(gameScore = squore, hint = "") }
+            _userTextInput.update { "" }
         }
     }
 
@@ -161,8 +167,9 @@ class ScrambleGameViewModel : ViewModel() {
             EventType.PickNewWord -> pickNewWord()
             is EventType.ShowHint -> showHint(level = event.level)
             EventType.ShuffleWordAgain -> reshuffle()
-            is EventType.CheckAnswer -> checkAnswer(event.answer)
+            is EventType.CheckAnswer -> checkAnswer()
             EventType.ScoreInc -> this.testScoreAnimation()
+            is EventType.TypeIn -> _userTextInput.update { event.newTextLine }
         }
     }
 }
