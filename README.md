@@ -4,7 +4,8 @@
 
 # Скриншоты
 <div style="display: flex; flex-direction: row;">
-  <img src="https://github.com/OlegQt/TestGl/blob/master/ScrambleScreenA.jpeg" alt="playlistScreen" width="300">
+  <img src="https://github.com/OlegQt/TestGl/blob/master/ScrableScreenB.jpeg" alt="playlistScreen" width="300">
+  <img src="https://github.com/OlegQt/TestGl/blob/master/ScrableScreenA.jpeg" alt="playlistScreen" width="300">
 </div>
 
 
