@@ -7,10 +7,7 @@ import kotlinx.coroutines.flow.update
 
 class ScrambleGameViewModel : ViewModel() {
     private var currentWord: String = ""
-    private var hint: String = ""
     private var squore = 0
-
-    private val userWords = mutableListOf<String>()
 
     private val _uiState = MutableStateFlow(ScrambleUiState())
     val uiState = _uiState.asStateFlow()

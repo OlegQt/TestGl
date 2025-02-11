@@ -132,11 +132,7 @@ fun GameCard(
 
             ShowHintWord(hintString = hintWord)
 
-            OperationButtons(
-                hintWord = hintWord,
-                clearInputTxt = { inputString = "" },
-                event = event
-            )
+            OperationButtons(event = event)
         }
     }
 
@@ -223,8 +219,6 @@ fun ScoreCard(score: Int = 0) {
 
 @Composable
 fun OperationButtons(
-    hintWord: String = "",
-    clearInputTxt: () -> Unit = {},
     event: (EventType) -> Unit = {}
 ) {
     Column(
