@@ -28,7 +28,8 @@ import kotlin.random.Random
 @Composable
 fun Space(
     modifier: Modifier = Modifier,
-    takeFpsInfo: (String) -> Unit = {}
+    takeFpsInfo: (String) -> Unit = {},
+    particleQuantity: Int = 100
 ) {
 
     data class WhiteParticle(
@@ -56,9 +57,9 @@ fun Space(
         endX = Float.POSITIVE_INFINITY  // Конец градиента справа
     )
 
-    LaunchedEffect(Unit) {
-        // Инициализация частиц при старте
-        repeat(100) {
+    LaunchedEffect(particleQuantity) {
+        // Инициализация частиц при смене числа
+        repeat(particleQuantity - particleList.size) {
             val speedVector = Offset(
                 x = (Random.nextFloat() - 0.5f) / 100f,
                 y = (Random.nextFloat() - 0.5f) / 100f
@@ -99,7 +100,8 @@ fun Space(
             }
             particlesCounter = particleList.size
         },
-        content = {}
+        content = {
+        }
     )
 }
 

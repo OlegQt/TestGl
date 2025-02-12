@@ -2,6 +2,7 @@ package com.testgl.presentation.screens.scramble
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
@@ -12,7 +13,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Refresh
@@ -31,6 +32,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -78,13 +80,16 @@ fun ScrambleGameScreen(
     val onEvent: (EventType) -> Unit = { viewModel.onEvent(it) }
     val userInput = viewModel.userInputText.collectAsState()
 
-    Space(modifier = modifier.fillMaxSize())
+    var animationParticleQuantity by remember { mutableStateOf(1) }
+
+    Space(modifier = modifier.fillMaxSize(), particleQuantity = animationParticleQuantity)
+
+    SettingButton(modifier = modifier.fillMaxSize()) {
+        animationParticleQuantity++
+    }
 
     Box(
-        modifier = modifier.clickable {
-            playSoundFun(SoundType.WrongBeep)
-            //isCompleted = !isCompleted
-        },
+        modifier = modifier,
         content = {
             GameCard(
                 sourceWord = uiState.value.currentScrambleWord,
@@ -115,13 +120,16 @@ fun GameCard(
 
     Card(
         modifier = Modifier
+            .fillMaxWidth()
             .offset { IntOffset(0, scrambleWordYOffset) }
-            .padding(top = 0.dp, start = 16.dp, end = 16.dp),
+            .padding(top = 0.dp, start = 16.dp, end = 16.dp)
+            .animateContentSize(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
         )
     ) {
         Column(
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Bottom
         ) {
@@ -289,6 +297,23 @@ fun OperationButton(
         }
 
     }
+}
+
+@Composable
+fun SettingButton(
+    modifier: Modifier = Modifier,
+    onClickEvent: () -> Unit = {}
+) {
+    Box(modifier = modifier, contentAlignment = Alignment.BottomEnd) {
+        IconButton(
+            modifier = Modifier.rotation(),
+            onClick = onClickEvent,
+            colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.onSurface)
+        ) {
+            Icon(imageVector = Icons.Default.Build, null)
+        }
+    }
+
 }
 
 fun Modifier.rotation() = composed {
