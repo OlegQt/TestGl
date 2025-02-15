@@ -1,4 +1,4 @@
-package com.testgl.presentation.screens
+package com.testgl.presentation.screens.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.testgl.presentation.theme.AppTheme
@@ -27,7 +28,8 @@ import kotlin.random.Random
 @Composable
 fun Space(
     modifier: Modifier = Modifier,
-    takeFpsInfo: (String) -> Unit = {}
+    takeFpsInfo: (String) -> Unit = {},
+    particleQuantity: Int = 100
 ) {
 
     data class WhiteParticle(
@@ -45,16 +47,19 @@ fun Space(
     var particlesCounter by remember { mutableIntStateOf(0) }
     val particleList = remember { mutableStateListOf<WhiteParticle>() }
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface
-    val gradientBrush = Brush.linearGradient(
+
+    val darkBlueGradient = Brush.horizontalGradient(
         colors = listOf(
-            MaterialTheme.colorScheme.onPrimary,
-            MaterialTheme.colorScheme.onSecondary
-        )
+            Color(0xFF0D0C1D),  // Очень темный синий (начало градиента)
+            Color(0xFF1D1C2B)   // Темный фиолетово-синий (конец градиента)
+        ),
+        startX = 0f,  // Начало градиента слева
+        endX = Float.POSITIVE_INFINITY  // Конец градиента справа
     )
 
-    LaunchedEffect(Unit) {
-        // Инициализация частиц при старте
-        repeat(100) {
+    LaunchedEffect(particleQuantity) {
+        // Инициализация частиц при смене числа
+        repeat(particleQuantity - particleList.size) {
             val speedVector = Offset(
                 x = (Random.nextFloat() - 0.5f) / 100f,
                 y = (Random.nextFloat() - 0.5f) / 100f
@@ -82,7 +87,7 @@ fun Space(
 
     Box(modifier = modifier
         .fillMaxSize()
-        .background(gradientBrush)
+        .background(darkBlueGradient)
         .blur(radius = 6.dp)
         .clickable { }
         .drawBehind {
@@ -95,7 +100,8 @@ fun Space(
             }
             particlesCounter = particleList.size
         },
-        content = {}
+        content = {
+        }
     )
 }
 
